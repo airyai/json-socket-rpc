@@ -1,11 +1,2 @@
-V	220228171121Z		01	unknown	/C=CN/ST=Beijing/L=Beijing/O=pynojo development team/CN=pynojo-center-control/emailAddress=pynojo-discuss@googlegroups.com
-V	220228171121Z		02	unknown	/C=CN/ST=Beijing/L=Beijing/O=pynojo development team/CN=pynojo-oj-judger/emailAddress=pynojo-discuss@googlegroups.com
-V	220228171121Z		03	unknown	/C=CN/ST=Beijing/L=Beijing/O=pynojo development team/CN=pynojo-server-1/emailAddress=pynojo-discuss@googlegroups.com
-V	220228171121Z		04	unknown	/C=CN/ST=Beijing/L=Beijing/O=pynojo development team/CN=pynojo-server-2/emailAddress=pynojo-discuss@googlegroups.com
-V	220228171121Z		05	unknown	/C=CN/ST=Beijing/L=Beijing/O=pynojo development team/CN=pynojo-server-3/emailAddress=pynojo-discuss@googlegroups.com
-V	220228171121Z		06	unknown	/C=CN/ST=Beijing/L=Beijing/O=pynojo development team/CN=pynojo-server-4/emailAddress=pynojo-discuss@googlegroups.com
-V	220228171121Z		07	unknown	/C=CN/ST=Beijing/L=Beijing/O=pynojo development team/CN=pynojo-server-5/emailAddress=pynojo-discuss@googlegroups.com
-V	220228171121Z		08	unknown	/C=CN/ST=Beijing/L=Beijing/O=pynojo development team/CN=pynojo-server-6/emailAddress=pynojo-discuss@googlegroups.com
-V	220228171122Z		09	unknown	/C=CN/ST=Beijing/L=Beijing/O=pynojo development team/CN=pynojo-server-7/emailAddress=pynojo-discuss@googlegroups.com
-V	220228171122Z		0A	unknown	/C=CN/ST=Beijing/L=Beijing/O=pynojo development team/CN=pynojo-server-8/emailAddress=pynojo-discuss@googlegroups.com
-V	220228171122Z		0B	unknown	/C=CN/ST=Beijing/L=Beijing/O=pynojo development team/CN=pynojo-server-9/emailAddress=pynojo-discuss@googlegroups.com
+V	220228174527Z		01	unknown	/C=CN/ST=Beijing/L=Beijing/O=pynojo development team/CN=pynojo-center-control/emailAddress=pynojo-discuss@googlegroups.com
+V	220228174527Z		02	unknown	/C=CN/ST=Beijing/L=Beijing/O=pynojo development team/CN=pynojo-oj-judger/emailAddress=pynojo-discuss@googlegroups.com

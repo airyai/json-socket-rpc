@@ -30,6 +30,7 @@ import logging
 import session
 import protocol
 import time
+import ssl
 
 # Server Session
 class ServerSession(session.Session):
@@ -128,5 +129,17 @@ class Server(StreamServer):
                 success += 1
         del clients
         return success
+    
+    def wrap_socket_and_handle(self, client_socket, address):
+        try:
+            return StreamServer.wrap_socket_and_handle(self,
+                                                       client_socket, 
+                                                       address)
+        except ssl.SSLError:
+            pName = [str(s) for s in client_socket.getpeername()[:2]]
+            logging.warning('Bad SSL client from %s.' % ':'.join(pName))
+            client_socket.sendall('SSL protocol error.\n')
+            client_socket.close()
+            return None
 
 

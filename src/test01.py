@@ -25,12 +25,17 @@
 
 from __future__ import print_function, unicode_literals
 import client
-import gevent
+import gevent, ssl
 
 def do_test(clt):
+    print (clt.call('echo', 'Hi'))
     print (clt.broadcast('echo', 'hello, world!'))
 
-clt = client.Client(('127.0.0.1', 9999))
+# following will raise SSLError if certificate not verified
+clt = client.Client(('127.0.0.1', 9999),
+                    ssl_version=ssl.PROTOCOL_SSLv23,
+                    cert_reqs=ssl.CERT_REQUIRED,
+                    ca_certs='certs/keys/ca.crt')
 gevent.spawn(do_test, clt)
 clt.serve()
 

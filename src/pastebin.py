@@ -25,6 +25,8 @@
 
 from __future__ import print_function, unicode_literals
 import logging
+import ssl
+
 import server
 
 logging.basicConfig(level=logging.DEBUG, 
@@ -32,6 +34,11 @@ logging.basicConfig(level=logging.DEBUG,
             datefmt='%H:%M:%S')
 logging.debug('Server started.')
 
-svr = server.Server(('127.0.0.1', 9999))
+# server should verify client by password, not certificate.
+# (without spy, it is safe!)
+svr = server.Server(('127.0.0.1', 9999),
+                    ssl_version=ssl.PROTOCOL_SSLv23,
+                    keyfile='certs/keys/pynojo-center-control.key',
+                    certfile='certs/keys/pynojo-center-control.crt')
 svr.serve_forever()
 
