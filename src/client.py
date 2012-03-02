@@ -37,7 +37,7 @@ class ClientSession(session.Session):
         
     @protocol.expose
     def echo(self, message):
-        print ('IN: %s' % message)
+        return message
 
 # Client 
 class Client(object):

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# init environment
+source ./vars
+./clean-all
+
+# build dh
+./build-dh
+
+# build ca
+./pkitool --batch --initca pynojo-ca
+
+# build servers
+./pkitool --batch --server pynojo-center-control
+./pkitool --batch --server pynojo-oj-judger
+./pkitool --batch --server pynojo-server-1
+./pkitool --batch --server pynojo-server-2
+./pkitool --batch --server pynojo-server-3
+./pkitool --batch --server pynojo-server-4
+./pkitool --batch --server pynojo-server-5
+./pkitool --batch --server pynojo-server-6
+./pkitool --batch --server pynojo-server-7
+./pkitool --batch --server pynojo-server-8
+./pkitool --batch --server pynojo-server-9
+
