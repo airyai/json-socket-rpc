@@ -26,6 +26,7 @@
 from __future__ import print_function, unicode_literals
 import session, protocol
 
+import socket
 import gevent.socket, gevent.ssl
 
 # Client Session
@@ -36,7 +37,7 @@ class ClientSession(session.Session):
         
     @protocol.expose
     def echo(self, message):
-        return message
+        print ('IN: %s' % message)
 
 # Client 
 class Client(object):
@@ -48,7 +49,7 @@ class Client(object):
         self._sck = gevent.socket.create_connection(address)
         if (len(ssl_args)):
             self._sck = gevent.ssl.wrap_socket(self._sck, **ssl_args)
-        self.SessionClass
+        self.SessionClass = sessionClass
         self.session = sessionClass(self._sck)
             
     def serve(self):
@@ -58,6 +59,7 @@ class Client(object):
         self.session.serve()
         self.session.abandon()
         self.session = None
+        self._sck = None
         
     def call(self, method, *args, **kwargs):
         '''
@@ -70,7 +72,14 @@ class Client(object):
         Raise socket.error if the connection has been closed, and 
         gevent.timeout.Timeout when request timeout.
         '''
-        return self.session.call(method, *args, **kwargs)
+        if (self.session is None):
+            return
+        try:
+            return self.session.call(method, *args, **kwargs)
+        except socket.error:
+            self.session.abandon()
+            self._sck = self.session = None
+            raise
     
     def broadcast(self, method, *args, **kwargs):
         '''
@@ -89,7 +98,7 @@ class Client(object):
                   'params': args if len(args) > 0
                                  else kwargs if len(kwargs) > 0
                                              else None}
-        return self.session.call('broadcast', params)
+        return self.call('broadcast', params)
         
     def setRequestTimeout(self, timeout):
         '''Set request timeout.'''

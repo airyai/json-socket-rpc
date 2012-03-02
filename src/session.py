@@ -26,7 +26,7 @@
 from __future__ import print_function, unicode_literals
 import protocol
 
-import socket
+import socket, logging
 import gevent.event, gevent.coros
 
 class Session(protocol.Dispatcher):
@@ -116,10 +116,13 @@ class Session(protocol.Dispatcher):
             msg = msg.strip()
             obj = protocol.parseJson(msg)
             if (isinstance(obj, tuple)):
+                logging.debug('Got bad message from %s.' % self.name)
                 self._send_response(protocol.Response(None, obj[0], obj[1]))
             elif (isinstance(obj, protocol.Response)):
+                logging.debug('Got response from %s.' % self.name)
                 self._got_response(obj)
             elif (isinstance(obj, protocol.Request)):
+                logging.debug('Handle request from %s.' % self.name)
                 gevent.spawn(self._serve_request, obj)
             else:
                 self._got_badmessage(msg)
@@ -128,14 +131,18 @@ class Session(protocol.Dispatcher):
         '''Called while socket received a bad message.'''
         pass
                 
-    def _send_response(self, response, asyncResult):
+    def _send_response(self, response):
         '''Send response to the remote side.'''
-        if (not self.writeline(response.toJSON())):
+        return self.writeline(response.toJSON())
+    
+    def _send_request(self, s, asyncResult):
+        if (not self.writeline(s)):
             asyncResult.set_exception(socket.error('Connection closed.'))
 
     def _serve_request(self, request):
         '''Serve when get request from remote side.'''
         result = self._disp.dispatch(request)
+        result.id = request.id
         self.writeline(result.toJSON())
         
     def _got_response(self, response):
@@ -164,15 +171,16 @@ class Session(protocol.Dispatcher):
         
         Raise socket.error if the connection has been closed.
         '''
-        # serialize request
-        s = request.toJSON()
         # assign a job id.
         rId = self._nextRquestId()
         request.id = rId
+        # serialize request
+        s = request.toJSON()
+        # init async call
         result = gevent.event.AsyncResult()
         self._requests[rId] = result
         # emit job
-        gevent.spawn(self._send_response, s, result)
+        gevent.spawn(self._send_request, s, result)
         # wait for result & delete job
         try:
             ret = result.get(timeout=timeout)

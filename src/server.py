@@ -94,14 +94,14 @@ class Server(StreamServer):
         '''Handle the session of a socket.'''
         
         session = self.SessionClass(self, socket)
-        logging.debug('Client %s connected.' % session.name)
+        logging.info('Client %s connected.' % session.name)
         
         self.clients[session] = time.time()
         session.serve()
         session.abandon()
         del self.clients[session]
         
-        logging.debug('Client %s disconnected.' % session.name)
+        logging.info('Client %s disconnected.' % session.name)
         
     def broadcast(self, session, call):
         '''
@@ -111,9 +111,9 @@ class Server(StreamServer):
         '''
         message = call.toJSON()
         if (self.verbose):
-            logging.debug('Broadcast from %s: %s.' % (session.name, message))
+            logging.info('Broadcast from %s: %s.' % (session.name, message))
         else:
-            logging.debug('Broadcast from %s.' % (session.name))
+            logging.info('Broadcast from %s.' % (session.name))
             
         message = str(message)
         
