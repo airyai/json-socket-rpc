@@ -28,7 +28,7 @@ import logging
 import server
 
 logging.basicConfig(level=logging.DEBUG, 
-            format='[%(asctime)s %(module)s.py:%(lineno)s] %(message)s',
+            format='[%(levelname)s %(asctime)s %(module)s.py:%(lineno)s] %(message)s',
             datefmt='%H:%M:%S')
 logging.debug('Server started.')
 

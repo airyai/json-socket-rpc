@@ -44,13 +44,15 @@ class Session(protocol.Dispatcher):
         :type socket: gevent.socket.socket.
         '''
         super(Session, self).__init__()
-        self.name = repr(socket.getpeername())
+        self.peerName = socket.getpeername()
+        self.name = ':'.join([str(s) for s in self.peerName[:2]])
         self._disp = self
         self._sck = socket
         self._fp = socket.makefile('r')
         self._lock = gevent.coros.Semaphore()
         self._requests = {}     # request queue
         self._requestId = 1     # manage request id
+        self.requestTimeout = None # default request timeout
         
     def writeline(self, msg):
         '''
@@ -126,9 +128,10 @@ class Session(protocol.Dispatcher):
         '''Called while socket received a bad message.'''
         pass
                 
-    def _send_response(self, response):
+    def _send_response(self, response, asyncResult):
         '''Send response to the remote side.'''
-        self.writeline(response.toJSON())
+        if (not self.writeline(response.toJSON())):
+            asyncResult.set_exception(socket.error('Connection closed.'))
 
     def _serve_request(self, request):
         '''Serve when get request from remote side.'''
@@ -155,8 +158,12 @@ class Session(protocol.Dispatcher):
         self._lock.release()
         return ret
     
-    def call(self, request, timeout=None):
-        '''Emit a request.'''
+    def doRequest(self, request, timeout=None):
+        '''
+        Emit a request.
+        
+        Raise socket.error if the connection has been closed.
+        '''
         # serialize request
         s = request.toJSON()
         # assign a job id.
@@ -165,12 +172,30 @@ class Session(protocol.Dispatcher):
         result = gevent.event.AsyncResult()
         self._requests[rId] = result
         # emit job
-        gevent.spawn(self._send_response, s)
+        gevent.spawn(self._send_response, s, result)
         # wait for result & delete job
         try:
-            ret = result.get(timeout=None)
+            ret = result.get(timeout=timeout)
             return ret
         except:
             self._requests.pop(rId, None)
             raise
         
+    def call(self, method, *args, **kwargs):
+        '''
+        A fast interface to emit request.
+        
+        JSON RPC requires only one of the list params or dict params,
+        so pass *args and **kwargs at the same time will cause a 
+        TypeError.
+        
+        Raise socket.error if the connection has been closed.
+        '''
+        if (len(args) > 0 and len(kwargs) > 0):
+            raise TypeError('JSON RPC requires only one of the list '
+                            'params or dict params.')
+        params = (args if len(args) > 0
+                       else kwargs if len(kwargs) > 0
+                                   else None)
+        timeout = self.requestTimeout
+        return self.doRequest(protocol.Request(method, params), timeout)

@@ -58,6 +58,10 @@ class ServerSession(session.Session):
             raise TypeError()
         req = protocol.Request(method, params)
         return self.server.broadcast(self, req)
+    
+    @protocol.expose
+    def echo(self, message):
+        return message
         
     def _got_badmessage(self, msg):
         '''On bad message received.'''
@@ -107,9 +111,9 @@ class Server(StreamServer):
         '''
         message = call.toJSON()
         if (self.verbose):
-            logging.debug('Broadcast from %s: %s' % (session.name, message))
+            logging.debug('Broadcast from %s: %s.' % (session.name, message))
         else:
-            logging.debug('Broadcast from %s' % (session.name))
+            logging.debug('Broadcast from %s.' % (session.name))
             
         message = str(message)
         
@@ -118,6 +122,8 @@ class Server(StreamServer):
         for c in clients:
             if (c == session):
                 continue
+            # Just broadcast, did not expect a result
+            # If result, ignore it.
             if (c.writeline(message)):
                 success += 1
         del clients
