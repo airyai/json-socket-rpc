@@ -85,13 +85,13 @@ class Server(StreamServer):
         :param sessionClass: The class of Session.
         :type sessionClass: Derived class of ServerSession.
         '''
-        StreamServer.__init__(self, listener, self._handle, backlog,
+        StreamServer.__init__(self, listener, self._handle_socket, backlog,
                               spawn, **ssl_args)
         self.SessionClass = sessionClass
         self.clients = {}
         self.verbose = verbose
         
-    def _handle(self, socket, address):
+    def _handle_socket(self, socket, address):
         '''Handle the session of a socket.'''
         
         session = self.SessionClass(self, socket)

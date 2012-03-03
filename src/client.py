@@ -61,6 +61,10 @@ class Client(object):
         self.session = None
         self._sck = None
         
+    def disconnect(self):
+        '''Disconnect client.'''
+        self.session.abandon()
+        
     def call(self, method, *args, **kwargs):
         '''
         Call remote RPC method.

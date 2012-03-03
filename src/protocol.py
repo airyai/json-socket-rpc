@@ -243,8 +243,8 @@ def parseJson(s):
         return None
 
 # Service object decorator
-def expose(f, is_exposed=True):
-    setattr(f, '_json_rpc_exposed', is_exposed)
+def expose(f, is_expose=True):
+    setattr(f, '_json_rpc_exposed', is_expose)
     return f
     
 def is_exposed(f):
